@@ -16,7 +16,7 @@ variables:
 
 
 stages:
-- stage: Deploy helm
+- stage: Deploy_helm_Chart
   jobs:
     - deployment: terraform_plan_apply
       environment: dev
