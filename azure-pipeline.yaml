@@ -66,6 +66,6 @@ stages:
                   targetType: 'inline'
                   script: |
                     helm repo add examples https://helm.github.io/examples
-                    helm upgrade --install ahoy examples/hello-world  --values values.yaml
+                    helm upgrade --install ahoy examples/hello-world  --values values.yaml --create-namespace hello-world
 
                 displayName: Helm deploy application with secret
