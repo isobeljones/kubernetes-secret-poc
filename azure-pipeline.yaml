@@ -9,10 +9,18 @@ trigger:
       - /**/*.md
 
 parameters:
-  aks_cluster_name: "platforms-aks-dev-eun"
-  aks_resource_group: "platforms-aks-dev-eun"
-  service_connection: "SwiftKey Development - MSI"
-  Keyvault: "kubernetes-secret-dev"
+- name: aks_cluster_name:
+  type: string
+  default: "platforms-aks-dev-eun"
+- name: aks_resource_group
+  type: string
+  default: "platforms-aks-dev-eun"
+- name: service_connection
+  type: string
+  default: "SwiftKey Development - MSI"
+- name: Keyvault
+  type: string
+  default: "kubernetes-secret-dev"
 
 
 stages:
