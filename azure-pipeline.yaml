@@ -8,25 +8,15 @@ trigger:
     exclude:
       - /**/*.md
 
-parameters:
-- name: aks_cluster_name:
-  type: string
-  default: "platforms-aks-dev-eun"
-- name: aks_resource_group
-  type: string
-  default: "platforms-aks-dev-eun"
-- name: service_connection
-  type: string
-  default: "SwiftKey Development - MSI"
-- name: Keyvault
-  type: string
-  default: "kubernetes-secret-dev"
+variables:
+  aks_cluster_name: "platforms-aks-dev-eun"
+  aks_resource_group: "platforms-aks-dev-eun"
+  service_connection: "SwiftKey Development - MSI"
+  Keyvault: "kubernetes-secret-dev"
 
 
 stages:
 - stage: Deploy helm
-  # Will always deploy to dev, will only deploy to other environments if the branch is main
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   jobs:
     - deployment: terraform_plan_apply
       environment: dev
@@ -52,18 +42,17 @@ stages:
 
                     az login --identity 
                     
-                    az aks get-credentials -n ${{ parameters.aks_cluster_name }} -g ${{ parameters.aks_resource_group }}
+                    az aks get-credentials -n ${{ variables.aks_cluster_name }} -g ${{ variables.aks_resource_group }}
 
                     kubelogin convert-kubeconfig -l azurecli
 
                 displayName: kubelogin - Bash
 
-
               # Download secret name from AKV
               - task: AzureKeyVault@2
                 inputs:
-                  azureSubscription: ${{ parameters.service_connection }}
-                  KeyVaultName: ${{ parameters.keyvault }}"
+                  azureSubscription: ${{ variables.service_connection }}
+                  KeyVaultName: ${{ variables.keyvault }}"
 
               - task: qetza.replacetokens.replacetokens-task.replacetokens@3
                 displayName: "Replace tokens"
