@@ -24,60 +24,60 @@ parameters:
 
 
 stages:
-      - stage: Deploy helm
-        # Will always deploy to dev, will only deploy to other environments if the branch is main
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-        jobs:
-          - deployment: terraform_plan_apply
-            environment: dev
-            displayName: Terraform Plan & Apply
-            pool:
-              name: "cli-platforms-1es-dev-eun"
-            strategy:
-              runOnce:
-                deploy:
-                  steps:
-                    - checkout: self
+- stage: Deploy helm
+  # Will always deploy to dev, will only deploy to other environments if the branch is main
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  jobs:
+    - deployment: terraform_plan_apply
+      environment: dev
+      displayName: Terraform Plan & Apply
+      pool:
+        name: "cli-platforms-1es-dev-eun"
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: self
 
-                    # Use kubelogin to log into AKS cluster
-                    - task: Bash@3
-                      inputs:
-                        targetType: 'inline'
-                        script: |
-                          # TEMPORARY: install latest version of kubelogin, needs to be removed once latest version is installed on image
-                          sudo rm /var/lib/kubelogin/bin/linux_amd64/kubelogin
-                          wget https://github.com/Azure/kubelogin/releases/download/v0.0.27/kubelogin-linux-amd64.zip
-                          unzip kubelogin-linux-amd64.zip
-                          sudo mv bin/linux_amd64/kubelogin /usr/bin
+              # Use kubelogin to log into AKS cluster
+              - task: Bash@3
+                inputs:
+                  targetType: 'inline'
+                  script: |
+                    # TEMPORARY: install latest version of kubelogin, needs to be removed once latest version is installed on image
+                    sudo rm /var/lib/kubelogin/bin/linux_amd64/kubelogin
+                    wget https://github.com/Azure/kubelogin/releases/download/v0.0.27/kubelogin-linux-amd64.zip
+                    unzip kubelogin-linux-amd64.zip
+                    sudo mv bin/linux_amd64/kubelogin /usr/bin
 
-                          az login --identity 
-                          
-                          az aks get-credentials -n ${{ parameters.aks_cluster_name }} -g ${{ parameters.aks_resource_group }}
+                    az login --identity 
+                    
+                    az aks get-credentials -n ${{ parameters.aks_cluster_name }} -g ${{ parameters.aks_resource_group }}
 
-                          kubelogin convert-kubeconfig -l azurecli
+                    kubelogin convert-kubeconfig -l azurecli
 
-                      displayName: kubelogin - Bash
+                displayName: kubelogin - Bash
 
 
-                    # Download secret name from AKV
-                    - task: AzureKeyVault@2
-                      inputs:
-                        azureSubscription: ${{ parameters.service_connection }}
-                        KeyVaultName: ${{ parameters.keyvault }}"
+              # Download secret name from AKV
+              - task: AzureKeyVault@2
+                inputs:
+                  azureSubscription: ${{ parameters.service_connection }}
+                  KeyVaultName: ${{ parameters.keyvault }}"
 
-                    - task: qetza.replacetokens.replacetokens-task.replacetokens@3
-                      displayName: "Replace tokens"
-                      inputs:
-                        targetFiles: |
-                          ubernetes-secret-poc//values.yml
+              - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+                displayName: "Replace tokens"
+                inputs:
+                  targetFiles: |
+                    ubernetes-secret-poc//values.yml
 
-                    # Install kube-prometheus-stack helm chart
-                    - template: helm/build-update-upgrade.yml@platforms-templates
-                    - task: Bash@3
-                      inputs:
-                        targetType: 'inline'
-                        script: |
-                          helm repo add examples https://helm.github.io/examples
-                          helm upgrade --install ahoy examples/hello-world  --values values.yaml
+              # Install kube-prometheus-stack helm chart
+              - template: helm/build-update-upgrade.yml@platforms-templates
+              - task: Bash@3
+                inputs:
+                  targetType: 'inline'
+                  script: |
+                    helm repo add examples https://helm.github.io/examples
+                    helm upgrade --install ahoy examples/hello-world  --values values.yaml
 
-                      displayName: Helm deploy application with secret
+                displayName: Helm deploy application with secret
