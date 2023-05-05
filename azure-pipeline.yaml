@@ -21,10 +21,10 @@ stages:
         condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
         jobs:
           - deployment: terraform_plan_apply
-            environment: ${{ env.name }}
+            environment: dev
             displayName: Terraform Plan & Apply
             pool:
-              name: "cli-platforms-1es-${{ env.short_name }}-eun"
+              name: "cli-platforms-1es-dev-eun"
             strategy:
               runOnce:
                 deploy:
