@@ -45,10 +45,7 @@ stages:
                     az aks get-credentials -n ${{ variables.aks_cluster_name }} -g ${{ variables.aks_resource_group }}
 
                     kubelogin convert-kubeconfig -l azurecli
-                    echo pwd
-                    pwd
-                    echo ls
-                    ls -la
+
 
                 displayName: kubelogin - Bash
 
