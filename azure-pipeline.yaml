@@ -67,6 +67,6 @@ stages:
                   script: |
                     kubectl create namespace hello-world
                     helm repo add examples https://helm.github.io/examples
-                    helm upgrade --install ahoy examples/hello-world  --values values.yaml
+                    helm upgrade --install ahoy examples/hello-world  --values values.yaml --namespace hello-world
 
                 displayName: Helm deploy application with secret
