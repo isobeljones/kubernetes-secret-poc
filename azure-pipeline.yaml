@@ -58,7 +58,7 @@ stages:
                 displayName: "Replace tokens"
                 inputs:
                   targetFiles: |
-                    ubernetes-secret-poc//values.yml
+                    kubernetes-secret-poc//values.yml
 
               # Install kube-prometheus-stack helm chart
               - task: Bash@3
