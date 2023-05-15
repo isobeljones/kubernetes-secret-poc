@@ -52,7 +52,7 @@ stages:
               - task: AzureKeyVault@2
                 inputs:
                   azureSubscription: ${{ variables.service_connection }}
-                  KeyVaultName: ${{ variables.keyvault }}"
+                  KeyVaultName: ${{ variables.keyvault }}
 
               - task: qetza.replacetokens.replacetokens-task.replacetokens@3
                 displayName: "Replace tokens"
