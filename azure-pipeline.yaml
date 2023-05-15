@@ -58,14 +58,15 @@ stages:
                 displayName: "Replace tokens"
                 inputs:
                   targetFiles: |
-                    kubernetes-secret-poc/values.yml
+                    kubernetes-secret-poc/values.yaml
 
               # Install kube-prometheus-stack helm chart
               - task: Bash@3
                 inputs:
                   targetType: 'inline'
                   script: |
+                    kubectl create namespace hello-world
                     helm repo add examples https://helm.github.io/examples
-                    helm upgrade --install ahoy examples/hello-world  --values values.yaml --create-namespace hello-world
+                    helm upgrade --install ahoy examples/hello-world  --values values.yaml
 
                 displayName: Helm deploy application with secret
